@@ -1,0 +1,4 @@
+# PostgreSQL: binary включает готовую libpq, её не нужно собирать вручную.
+psycopg[binary]==3.3.6
+# Сведения о дисках одинаковым способом на Windows, Linux и macOS.
+psutil==7.2.2

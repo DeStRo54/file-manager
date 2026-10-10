@@ -1,0 +1,48 @@
+# Локальные настройки и пароли; шаблон остаётся в репозитории.
+.env
+.env.*
+!.env.example
+
+# Виртуальные окружения Python.
+/.venv/
+/.venv-*/
+/venv/
+/env/
+
+# Кеши и скомпилированные файлы Python.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Данные пользователей и временные файлы тестовой среды.
+/data/
+/.test-tmp/
+/.test-harness/
+
+# Отчёты покрытия и артефакты сборки.
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+/build/
+/dist/
+*.egg-info/
+
+# Локальные резервные копии БД и журналы.
+/backups/
+*.dump
+*.backup
+*.log
+
+# Временные файлы редакторов и служебные файлы ОС.
+.idea/
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,22 @@
+name: sdlc-file-manager
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PGDATABASE:-filemanager}
+      POSTGRES_USER: ${PGADMINUSER:-postgres}
+      POSTGRES_PASSWORD: ${PGADMINPASSWORD:?Set PGADMINPASSWORD in .env}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:${PGPORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+volumes:
+  postgres_data:
