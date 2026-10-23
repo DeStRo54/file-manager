@@ -1,0 +1,128 @@
+name: Local CI-CD
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+# GitHub Actions uses jobs + needs to declare sequential stages.
+defaults:
+  run:
+    shell: bash
+env:
+  PIP_CACHE_DIR: /root/.cache/pip
+  ACTIONS_ARTIFACT_UPLOAD_CONCURRENCY: '1'
+jobs:
+  build:
+    name: Build
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    container: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: /root/.cache/pip
+          key: pip-build-linux-py312-${{ hashFiles('requirements.txt') }}
+      - run: sh ci/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: application-build
+          path: dist/
+          retention-days: 7
+  test:
+    name: Test
+    needs: build
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    container: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: filemanager_ci
+          POSTGRES_PASSWORD: ${{ secrets.CI_PGADMIN_PASSWORD }}
+          POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+        options: >-
+          --health-cmd "pg_isready -U postgres -d filemanager_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      PGHOST: postgres
+      PGPORT: '5432'
+      PGDATABASE: filemanager_ci
+      PGADMINUSER: postgres
+      PGADMINPASSWORD: ${{ secrets.CI_PGADMIN_PASSWORD }}
+      PGUSER: filemanager_app
+      PGPASSWORD: ${{ secrets.CI_PGAPP_PASSWORD }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build
+      - run: tar -xzf build/source.tar.gz
+      - uses: actions/cache@v4
+        with:
+          path: /root/.cache/pip
+          key: pip-test-linux-py312-${{ hashFiles('ci/requirements-test.txt') }}
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r ci/requirements-test.txt
+          python ci/test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-report
+          path: reports/junit/
+  sast:
+    name: SAST
+    needs: test
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    container: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build
+      - run: tar -xzf build/source.tar.gz
+      - uses: actions/cache@v4
+        with:
+          path: /root/.cache/pip
+          key: pip-sast-linux-py312-${{ hashFiles('ci/requirements-sast.txt') }}
+      - run: python -m pip install -r ci/requirements-sast.txt
+      - run: |
+          mkdir -p reports
+          semgrep scan --config .semgrep.yml --strict --error --severity ERROR \
+            --metrics off --disable-version-check --json --output reports/semgrep.json app db ci main.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sast-report
+          path: reports/semgrep.json
+  deploy:
+    name: Local Deploy
+    needs: sast
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
+      options: ${{ vars.CI_RUNNER_IMAGE && '--volume /var/run/docker.sock:/var/run/docker.sock' || '' }}
+    env:
+      CI_PGADMIN_PASSWORD: ${{ secrets.CI_PGADMIN_PASSWORD }}
+      CI_PGAPP_PASSWORD: ${{ secrets.CI_PGAPP_PASSWORD }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build
+      - run: tar -xzf build/source.tar.gz
+      - run: sh ci/install-docker.sh
+      - run: sh ci/deploy.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-image-and-deployment
+          compression-level: 0
+          path: reports/
+          retention-days: 3

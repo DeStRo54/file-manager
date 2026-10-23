@@ -1,0 +1,59 @@
+# Separate demonstration stack; does not use the working database or .env.
+name: file-manager-ci
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: filemanager_ci
+      POSTGRES_PASSWORD: ${CI_PGADMIN_PASSWORD:-}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    volumes:
+      - ci_database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d filemanager_ci"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    labels:
+      file-manager.local-ci: "true"
+
+  init-db:
+    image: file-manager-ci:local
+    command: ["python", "-m", "db.init_db"]
+    environment:
+      PGHOST: db
+      PGDATABASE: filemanager_ci
+      PGUSER: filemanager_app
+      PGPASSWORD: ${CI_PGAPP_PASSWORD:-}
+      PGADMINUSER: postgres
+      PGADMINPASSWORD: ${CI_PGADMIN_PASSWORD:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      file-manager.local-ci: "true"
+
+  app:
+    image: file-manager-ci:local
+    build: .
+    environment:
+      PGHOST: db
+      PGDATABASE: filemanager_ci
+      PGUSER: filemanager_app
+      PGPASSWORD: ${CI_PGAPP_PASSWORD:-}
+    ports:
+      - "127.0.0.1::8080"
+    depends_on:
+      init-db:
+        condition: service_completed_successfully
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    labels:
+      file-manager.local-ci: "true"
+
+volumes:
+  ci_database:
+networks:
+  default:
+    labels:
+      file-manager.local-ci: "true"

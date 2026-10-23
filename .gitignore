@@ -46,3 +46,12 @@ htmlcov/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local CI tools, caches, reports and artifacts.
+/.tools/
+/.artifacts/
+/.cache/
+/reports/
+.act.secrets
+/.secrets
+/.secrets.*

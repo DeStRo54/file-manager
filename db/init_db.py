@@ -1,14 +1,15 @@
-"""Явная подготовка схемы и ограниченной роли; не вызывается обычным запуском."""
+"""Готовит БД перед первым запуском приложения."""
 
 import os
 import re
 
 from psycopg import sql
 
-from database import Database, load_env
+from .database import Database, load_env
 
 
 def provision(schema=None):
+    """Создаёт схему и настраивает рабочую роль: разрешает нужные запросы, ограничивая изменение таблиц и журнала."""
     load_env()
     username = os.getenv("PGUSER", "filemanager_app")
     password = os.getenv("PGPASSWORD")

@@ -1,0 +1,11 @@
+--container-architecture=linux/amd64
+--artifact-server-path=.artifacts
+-P ubuntu-latest=node:24.15.0-bookworm-slim
+--env-file=ci/runner.env
+--secret-file=ci/runner.env
+--container-daemon-socket=-
+--cache-server-path=.cache/act
+--action-cache-path=.cache/actions
+--action-offline-mode
+--artifact-server-addr=127.0.0.1
+--cache-server-addr=127.0.0.1

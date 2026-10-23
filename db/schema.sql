@@ -1,4 +1,4 @@
--- PostgreSQL 17. Применяется init_db.py при явной подготовке схемы.
+-- PostgreSQL 17. Применяется python -m db.init_db при явной подготовке схемы.
 CREATE TABLE IF NOT EXISTS Users (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   username VARCHAR(32) NOT NULL UNIQUE,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS Files (
   created_at TIMESTAMPTZ NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL,
   size BIGINT NOT NULL CHECK (size >= 0),
-  location TEXT NOT NULL,
+  location TEXT NOT NULL CONSTRAINT files_location_absolute CHECK (location ~ '^(/|[A-Za-z]:/)'),
   kind TEXT NOT NULL CHECK (kind IN ('file','directory')),
   owner_id INTEGER NOT NULL REFERENCES Users(id),
   deleted BOOLEAN NOT NULL DEFAULT FALSE,

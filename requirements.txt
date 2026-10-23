@@ -1,4 +1,7 @@
-# PostgreSQL: binary включает готовую libpq, её не нужно собирать вручную.
+# PostgreSQL: binary включает готовую libpq
 psycopg[binary]==3.3.6
-# Сведения о дисках одинаковым способом на Windows, Linux и macOS.
+# Сведения о дисках одинаковым способом на Windows, Linux и macOS
 psutil==7.2.2
+
+# Многострочный ввод: Enter — новая строка, Ctrl+S — сохранить.
+prompt_toolkit==3.0.52

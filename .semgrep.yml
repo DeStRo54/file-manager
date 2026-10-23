@@ -1,0 +1,39 @@
+rules:
+  - id: python-dynamic-sql
+    languages: [python]
+    severity: ERROR
+    message: Use SQL parameters or psycopg.sql identifiers instead of string interpolation.
+    metadata:
+      impact: HIGH
+    pattern-either:
+      - pattern: $CURSOR.execute(f"...", ...)
+      - pattern: $CURSOR.execute("..." % $VALUE, ...)
+      - pattern: $CURSOR.execute("..." + $VALUE, ...)
+      - pattern: $CURSOR.execute("...".format(...), ...)
+  - id: python-shell-command
+    languages: [python]
+    severity: ERROR
+    message: Avoid shell=True and os.system; pass an argument list.
+    metadata:
+      impact: HIGH
+    pattern-either:
+      - pattern: subprocess.$FUNC(..., shell=True, ...)
+      - pattern: os.system(...)
+  - id: python-code-execution
+    languages: [python]
+    severity: ERROR
+    message: Do not evaluate Python supplied at runtime.
+    metadata:
+      impact: CRITICAL
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)
+      - pattern: pickle.loads(...)
+      - pattern: pickle.load(...)
+  - id: python-unchecked-archive
+    languages: [python]
+    severity: ERROR
+    message: Validate archive entries and extraction limits explicitly.
+    metadata:
+      impact: HIGH
+    pattern: $ARCHIVE.extractall(...)

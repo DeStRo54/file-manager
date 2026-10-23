@@ -1,0 +1,11 @@
+.env
+.env.*
+.venv
+.venv-*
+data
+.artifacts
+.cache
+.tools
+.test-tmp
+.test-harness
+__pycache__

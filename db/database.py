@@ -1,4 +1,4 @@
-"""PostgreSQL, учётные записи и аудит. Файловых операций здесь нет."""
+"""Подключается к PostgreSQL и хранит пользователей, сведения о файлах и журнал действий."""
 
 import hashlib
 import hmac
@@ -13,11 +13,11 @@ from psycopg import sql
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 
 def load_env():
-    """Читаем простые строки KEY=VALUE из .env, если он создан."""
+    """Загружает настройки из .env, сохраняя значения, уже заданные в окружении."""
     env_file = PROJECT_DIR / ".env"
     if env_file.exists():
         for line in env_file.read_text(encoding="utf-8").splitlines():
@@ -31,12 +31,13 @@ def load_env():
 
 
 def password_key(password, salt):
-    """scrypt замедляет перебор; соль делает одинаковые пароли разными."""
+    """Вычисляет хеш пароля с солью через scrypt, чтобы затруднить перебор паролей."""
     return hashlib.scrypt(password.encode(), salt=salt.encode(), n=32768,
                           r=8, p=3, dklen=64, maxmem=64 * 1024 * 1024).hex()
 
 
 def check_password(password, stored_hash):
+    """Вычисляет хеш введённого пароля и сравнивает его с хешем из БД."""
     parts = stored_hash.split("$")
     if len(parts) != 6 or parts[:4] != ["scrypt", "32768", "8", "3"]:
         raise ValueError("Неподдерживаемый формат хеша в БД.")
@@ -44,9 +45,10 @@ def check_password(password, stored_hash):
 
 
 class Database:
-    """Одно соединение: консоль выполняет команды последовательно."""
+    """Объединяет запросы к БД и использует одно соединение, пока работает приложение."""
 
     def __init__(self, schema=None, initialize=False):
+        """Открывает соединение с БД; при initialize=True также создаёт схему, таблицы и процедуры."""
         load_env()
         self.schema = schema or os.getenv("PGSCHEMA", "public")
         if not re.fullmatch(r"[a-z][a-z0-9_]{0,62}", self.schema):
@@ -73,15 +75,25 @@ class Database:
                 # Два запуска не должны одновременно менять одну схему.
                 self.connection.execute("SELECT pg_advisory_xact_lock(734911, hashtext(%s))", (self.schema,))
                 self.connection.execute(sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(sql.Identifier(self.schema)))
-                self.connection.execute((PROJECT_DIR / "schema.sql").read_text(encoding="utf-8"))
+                self.connection.execute(Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"))
         except Exception:
             self.close()
             raise
 
+    def lock(self):
+        """Не даёт открыть вторую консоль для той же схемы БД до закрытия этого соединения."""
+        row = self.connection.execute(
+            "SELECT pg_try_advisory_lock(734910, hashtext(%s)) AS locked", (self.schema,)
+        ).fetchone()
+        if not row["locked"]:
+            raise ValueError("Другая копия приложения уже запущена. Закройте её.")
+
     def close(self):
+        """Закрывает соединение с БД и освобождает удерживаемую им блокировку запуска."""
         self.connection.close()
 
     def unfinished(self, user_id):
+        """Находит операции, для которых в журнале есть начало, но нет записи об успехе или ошибке."""
         return self.connection.execute("""
             SELECT id, operation_type, timestamp FROM operations s
             WHERE user_id=%s AND status='started'
@@ -94,6 +106,7 @@ class Database:
             """, (user_id,)).fetchall()
 
     def check(self):
+        """Возвращает версию PostgreSQL, выбранную схему и список хранимых процедур."""
         version = self.connection.execute("SHOW server_version").fetchone()["server_version"]
         procedures = self.connection.execute("""
             SELECT routine_name FROM information_schema.routines
@@ -103,10 +116,12 @@ class Database:
 
     def log(self, user_id, action, status, details=None, file_id=None):
         # Значения идут отдельно от SQL: %s — параметр, а не подстановка строк.
+        """Добавляет событие в журнал БД через процедуру record_operation."""
         self.connection.execute("CALL record_operation(%s, %s, %s, %s, %s)",
                                 (user_id, action, status, Jsonb(details or {}), file_id))
 
     def register(self, username, password):
+        """Проверяет логин и пароль и создаёт пользователя, сохраняя хеш вместо самого пароля."""
         if not re.fullmatch(r"[a-zA-Z0-9_-]{3,32}", username):
             raise ValueError("Логин: 3–32 латинских буквы, цифры, _ или -.")
         if len(password) < 8 or len(password.encode()) > 128:
@@ -124,6 +139,7 @@ class Database:
             raise ValueError("Этот логин уже занят.") from None
 
     def login(self, username, password):
+        """Проверяет пароль, учитывает неудачные попытки входа и возвращает ID и логин пользователя."""
         if not re.fullmatch(r"[a-zA-Z0-9_-]{3,32}", username) or len(password.encode()) > 128:
             raise ValueError("Некорректный логин или слишком длинный пароль.")
         error = None
@@ -152,6 +168,11 @@ class Database:
         return {"id": user["id"], "username": user["username"]}
 
     def save_file(self, user_id, location, size, kind):
+        """Добавляет или обновляет запись о файле по его владельцу и полному пути; возвращает ID записи."""
+        path = Path(location)
+        if not path.is_absolute():
+            raise ValueError("Местоположение файла должно быть абсолютным путём.")
+        location = path.as_posix()
         return self.connection.execute("""
             INSERT INTO files(filename, created_at, updated_at, size, location, kind, owner_id)
             VALUES (%s, clock_timestamp(), clock_timestamp(), %s, %s, %s, %s)
@@ -162,16 +183,23 @@ class Database:
             """, (Path(location).name, size, location, kind, user_id)).fetchone()["id"]
 
     def delete_file(self, user_id, location):
+        """Помечает файл удалённым в БД, сохраняя запись для связи с прежними событиями журнала."""
+        path = Path(location)
+        if not path.is_absolute():
+            raise ValueError("Местоположение файла должно быть абсолютным путём.")
+        location = path.as_posix()
         return self.connection.execute("CALL soft_delete_file(%s, %s, %s)",
                                        (user_id, location, None)).fetchone()["p_file_id"]
 
     def files(self, user_id):
+        """Возвращает записи о файлах пользователя, включая помеченные удалёнными."""
         return self.connection.execute("""
             SELECT id, filename, location, size, kind, created_at, updated_at, deleted
             FROM files WHERE owner_id=%s ORDER BY location
             """, (user_id,)).fetchall()
 
     def history(self, user_id, limit=20):
+        """Возвращает последние события пользователя; можно запросить от 1 до 100 записей."""
         if not 1 <= limit <= 100:
             raise ValueError("Количество событий: от 1 до 100.")
         return self.connection.execute("""
