@@ -38,27 +38,3 @@ JUnit XML, Semgrep блокирует HIGH/CRITICAL правила, Deploy ож�
 
 Инструкция по CI, артефактам и удалению демонстрационных контейнеров —
 [CI.md](CI.md).
-
-## Обновление локального CI-раннера — 23.10.2026
-
-Перешли с полного Python Bookworm на Python slim Trixie; Node обновлён до
-24.22.1. Docker CLI, Compose и Buildx копируются из официального docker:29-cli.
-В итоговом Dockerfile раннера нет apt/apk, установки патчей или дополнительных
-Git/cURL. Полный CI через act прошёл четыре стадии; JUnit подтвердил **25 тестов,
-без ошибок**. Лог: `.artifacts/runner-minimal-ci.log`.
-
-Trivy 0.76.1, одна свежая база для сравнения:
-
-| Образ | Critical / High находок по пакетам | Уникальные Critical / High CVE |
-| --- | --- | --- |
-| Старая основа python:3.12-bookworm | 32 / 625 | 15 / 300 |
-| Новая основа python:3.12-slim-trixie | 0 / 44 | 0 / 8 |
-| Готовый минимальный раннер с Node и Docker CLI | 0 / 49 | 0 / 12 |
-
-Это счётчики Trivy; они не равнозначны счётчикам другого сканера в редакторе.
-Оставшиеся High относятся к Debian и библиотекам Docker CLI-инструментов.
-Для части Go-библиотек указаны исправленные версии зависимостей, но они ещё
-не включены в проверенные готовые бинарники. Исключений CVE и ignore-unfixed нет.
-Сканер получил экспортированные архивы образов, без Docker socket.
-Отчёты: `.artifacts/security/runner-python-old.json`, `runner-python-new.json`,
-`runner-node-new.json` и `runner-minimal.json` в той же папке.
