@@ -9,6 +9,8 @@ UNPACK_LIMIT = 50 * 1024 * 1024 # Общий объём файлов после 
 ENTRY_LIMIT = 1000 # До 1000 записей (файлов и папок) в ZIP: даже множество пустых файлов
 RESERVED = {"CON", "PRN", "AUX", "NUL"} | {f"{name}{i}" for name in ("COM", "LPT") for i in range(1, 10)} # Служебные имена устройств Windows: их нельзя использовать как имена файлов.
 
+MAX_FILE_SIZE = 1024 * 1024 * 1024  # 1 ГиБ
+
 
 def safe_path(root, current, name, allow_root=False):
     """Проверяет, что путь остаётся внутри указанной папки и не содержит запрещённых имён или ссылок."""
@@ -54,20 +56,34 @@ def resolve_path(current, name, allow_root=False):
 
 
 def read_bytes(path):
-    """Открывает обычный файл, проверяет, что его не подменили, и читает содержимое."""
+    """Открывает обычный файл, проверяет подмену."""
     before = path.lstat()
-    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0))
+    if not stat.S_ISREG(before.st_mode):
+        raise ValueError("Можно читать только обычные файлы.")
+    if before.st_size > MAX_FILE_SIZE:
+        raise ValueError("Файл слишком большой. Максимум 1 ГиБ.")
+    flags = (os.O_RDONLY | getattr(os, "O_BINARY", 0)
+             | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
+    descriptor = os.open(path, flags)
     with os.fdopen(descriptor, "rb") as source:
         opened = os.fstat(source.fileno())
         if (not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1
                 or (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino)):
             raise ValueError("Файл подменён, является ссылкой или специальным файлом.")
-        data = source.read()
+        if opened.st_size > MAX_FILE_SIZE:
+            raise ValueError("Файл слишком большой. Максимум 1 ГиБ.")
+        data = source.read(MAX_FILE_SIZE + 1)
+        if len(data) > MAX_FILE_SIZE:
+            raise ValueError("Превышен допустимый размер файла.")
     return data
 
 
 def write_bytes(path, data, replace=False):
-    """Сначала записывает данные во временный файл, затем сохраняет готовый файл по нужному пути."""
+    """Записывает данные через временный файл."""
+    if not isinstance(data, bytes):
+        raise TypeError("Данные должны иметь тип bytes.")
+    if len(data) > MAX_FILE_SIZE:
+        raise ValueError("Файл слишком большой. Максимум 1 ГиБ.")
     temporary = tempfile.NamedTemporaryFile(dir=path.parent, prefix=".fm-", delete=False)
     temporary_path = Path(temporary.name)
     try:
