@@ -19,6 +19,19 @@ jobs:
     runs-on: ubuntu-latest
     container: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
     steps:
+      - name: Check CI database secrets
+        env:
+          CI_PGADMIN_PASSWORD: ${{ secrets.CI_PGADMIN_PASSWORD }}
+          CI_PGAPP_PASSWORD: ${{ secrets.CI_PGAPP_PASSWORD }}
+        run: |
+          if [ -z "$CI_PGADMIN_PASSWORD" ] || [ -z "$CI_PGAPP_PASSWORD" ]; then
+            echo "::error::Set repository secrets CI_PGADMIN_PASSWORD and CI_PGAPP_PASSWORD in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          if [ "$CI_PGADMIN_PASSWORD" = "$CI_PGAPP_PASSWORD" ]; then
+            echo "::error::CI database passwords must be different."
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
