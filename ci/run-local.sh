@@ -3,11 +3,11 @@ set -eu
 cd "$(dirname "$0")/.."
 
 if [ "$#" -gt 1 ]; then
-    echo "Usage: sh ci/run-local.sh [build|test|sast|deploy]" >&2
+    echo "Usage: sh ci/run-local.sh [build|test|sast|dependency-audit|deploy]" >&2
     exit 2
 fi
 case "${1:-}" in
-    ""|build|test|sast|deploy) ;;
+    ""|build|test|sast|dependency-audit|deploy) ;;
     *) echo "Unknown job: $1" >&2; exit 2 ;;
 esac
 job=${1:-}
@@ -21,7 +21,9 @@ else
     exit 1
 fi
 
-docker build -f ci/Dockerfile.runner -t file-manager-ci-runner:local .
+if ! docker image inspect file-manager-ci-runner:local >/dev/null 2>&1; then
+    docker build -f ci/Dockerfile.runner -t file-manager-ci-runner:local .
+fi
 
 # Cache shallow copies of actions for act's offline mode.
 mkdir -p .cache/actions

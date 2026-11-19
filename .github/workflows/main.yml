@@ -107,14 +107,45 @@ jobs:
           mkdir -p reports
           semgrep scan --config .semgrep.yml --strict --error --severity ERROR \
             --metrics off --disable-version-check --json --output reports/semgrep.json app db ci main.py
+      - name: Summarize Semgrep findings
+        if: always()
+        run: |
+          mkdir -p reports
+          python ci/dependency_report.py --semgrep reports/semgrep.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: sast-report
-          path: reports/semgrep.json
+          path: |
+            reports/semgrep.json
+            reports/semgrep.md
+  dependency-audit:
+    name: Dependency audit
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    container: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install pip-audit==2.9.0
+      - name: Scan and summarize dependencies
+        run: |
+          mkdir -p reports
+          if python -m pip_audit --strict -r requirements.txt --format json --output reports/pip-audit.json; then
+            audit_status=0
+          else
+            audit_status=$?
+          fi
+          python ci/dependency_report.py reports/pip-audit.json ci/dependency-exceptions.json "$audit_status"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit
+          path: |
+            reports/pip-audit.json
+            reports/dependency-audit.md
   deploy:
     name: Local Deploy
-    needs: sast
+    needs: [sast, dependency-audit]
     if: github.event_name != 'pull_request'
     timeout-minutes: 20
     runs-on: ubuntu-latest

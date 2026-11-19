@@ -97,3 +97,6 @@ docker compose up -d --wait db
 
 Подробнее: [руководство по коду](app/files/README.md),
 [тестирование](TESTING.md), [CI/CD](CI.md).
+
+Примеры для защитных тестов адаптированы из [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/).
+Проверки обхода путей и XML-сущностей находятся в `tests/test_security_payloads.py` и запускаются в CI вместе с остальными тестами.
