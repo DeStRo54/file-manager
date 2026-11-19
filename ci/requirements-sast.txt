@@ -1,1 +1,2 @@
 semgrep==1.182.0
+reportlab==4.4.9
