@@ -132,7 +132,7 @@ jobs:
     container: ${{ vars.CI_RUNNER_IMAGE || 'python:3.12-bookworm' }}
     steps:
       - uses: actions/checkout@v4
-      - run: python -m pip install pip-audit==2.9.0 reportlab==4.4.9
+      - run: python -m pip install pip-audit==2.9.0 cyclonedx-python-lib==9.1.0 reportlab==4.4.9
       - name: Scan and summarize dependencies
         run: |
           mkdir -p reports
@@ -147,8 +147,7 @@ jobs:
         run: python ci/report_pdf.py reports/dependency-audit.md
       - name: Export CycloneDX SBOM
         if: always()
-        run: |
-          python -m pip_audit --strict -r requirements.txt --format cyclonedx-json --output reports/sbom.cdx.json
+        run: python ci/export_sbom.py reports/pip-audit.json reports/sbom.cdx.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:

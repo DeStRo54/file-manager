@@ -95,7 +95,7 @@ docker compose up -d --wait db
 - `db/` — подключение, подготовка и схема БД.
 - `tests/` — тесты; `ci/` и `.github/` — вторая лабораторная.
 
-Подробнее: [руководство по коду](app/files/README.md),
+Подробнее: [модули файлового менеджера](app/files/),
 [тестирование](TESTING.md), [CI/CD](CI.md).
 
 Примеры для защитных тестов адаптированы из [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/).

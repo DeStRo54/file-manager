@@ -53,10 +53,18 @@ export ACTIONS_RUNTIME_URL=http://host.docker.internal:34567/
 set -- push -W .github/workflows/main.yml \
     --var CI_RUNNER_IMAGE=file-manager-ci-runner:local \
     --secret CI_PGADMIN_PASSWORD --secret CI_PGAPP_PASSWORD \
+    --container-daemon-socket=- \
+    --artifact-server-path=.artifacts --action-cache-path=.cache/actions \
+    --cache-server-path=.cache/act \
     --artifact-server-addr 127.0.0.1 \
     --cache-server-addr 127.0.0.1 --cache-server-port 34568 \
     --cache-server-external-url http://host.docker.internal:34568 \
     --env "GITHUB_RUN_ID=$(date +%s)$$" --pull=false
+# Only Deploy declares a Docker socket mount in our reviewed workflow.
+# Keep automatic socket mounts off for other jobs, including the Postgres service.
+case "$job" in
+    ""|deploy) set -- "$@" --container-options-policy=allow ;;
+esac
 if [ -n "$job" ]; then
     set -- "$@" -j "$job"
 fi
