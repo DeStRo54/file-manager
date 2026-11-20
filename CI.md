@@ -2,6 +2,9 @@
 
 ## Локальный запуск
 
+На GitHub конвейер автоматически запускается при push или pull request,
+затрагивающих `app/**`. Ручной запуск через workflow_dispatch доступен независимо от изменённых файлов.
+
 Нужны Docker Desktop с Linux-контейнерами, Git for Windows и act (инструкция проверена на уровне конфигурации с версией 0.2.98).
 Установка act из PowerShell:
 
@@ -41,14 +44,15 @@ sh ci/run-local.sh
 | ------ | ---------------------------------------------------------------------------------------- | ---------------------------------------- |
 | Build  | `ci/build.sh` проверяет Python через compileall и упаковывает исходники                  | `application-build` с `source.tar.gz`    |
 | Test   | Получает архив Build, ставит зависимости и запускает `ci/test.py` с отдельной PostgreSQL | `junit-report` с JUnit XML               |
-| SAST   | Semgrep проверяет app, db, ci и main.py по локальным снимкам `p/python`, `p/security-audit` и `.semgrep.yml` | `sast-report`: JSON, Markdown, SARIF, PDF |
+| SAST   | Semgrep проверяет только `app/` по локальным снимкам `p/python`, `p/security-audit` и `.semgrep.yml` | `sast-report`: JSON, Markdown, SARIF, PDF |
 | Dependency audit | Параллельно с Build проверяет зависимости через pip-audit | Отчёт и перечень компонентов CycloneDX |
 | Deploy | `ci/deploy.sh` собирает образ, запускает Compose и ждёт готовности                       | Docker-образ `.tar.gz` и адрес `/health` |
 
 В Test выполняются unittest-тесты из `tests/` и отдельный набор pytest из
 `tests/security/`. Ненулевой код тестов останавливает конвейер.
-SAST сохраняет находки всех уровней, а `ci/dependency_report.py` блокирует этап
-при находках уровня ERROR. Ошибки сканера и отчётов также блокируют конвейер.
+SAST и Dependency audit сохраняют находки в информационном режиме:
+обнаруженные уязвимости не блокируют деплой, включая находки уровня ERROR.
+Ошибки сканеров, неполное сканирование зависимостей и ошибки отчётов блокируют конвейер.
 Deploy ожидает успеха SAST и Dependency audit. Набор не гарантирует отсутствие всех уязвимостей.
 
 **Кэш** хранит загруженные pip-пакеты для ускорения повторных запусков Test/SAST.

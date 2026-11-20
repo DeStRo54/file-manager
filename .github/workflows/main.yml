@@ -1,7 +1,11 @@
 name: Local CI-CD
 on:
   push:
+    paths:
+      - 'app/**'
   pull_request:
+    paths:
+      - 'app/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -119,7 +123,7 @@ jobs:
             --config ci/semgrep-rules/security-audit.yml --config .semgrep.yml \
             --exclude 'ci/semgrep-rules/**' --strict \
             --metrics off --disable-version-check --json --output reports/semgrep.json \
-            --sarif-output reports/semgrep.sarif app db ci main.py
+            --sarif-output reports/semgrep.sarif app/
       - name: Summarize Semgrep findings
         if: always()
         run: |

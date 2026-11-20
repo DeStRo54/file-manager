@@ -29,7 +29,7 @@ sh ci/run-local.sh
 ```
 
 Конвейер выполняет Build → Test → SAST → Deploy в контейнерах. Test сохраняет
-JUnit XML, Semgrep блокирует находки уровня ERROR, Deploy ожидает готовности
+JUnit XML, Semgrep и Dependency audit сохраняют находки без блокировки деплоя, Deploy ожидает готовности
 БД и приложения через `/health` и сохраняет Docker-образ. Кэш зависимостей,
 секреты окружения и передача артефактов настроены в workflow.
 

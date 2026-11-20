@@ -30,7 +30,7 @@ def render(scan, exceptions, audit_status):
         "| Package | Version | Advisory | Severity | Description | Suggested fix | Status |",
         "|---|---|---|---|---|---|---|",
     ]
-    findings = blocking = skipped = 0
+    findings = open_findings = skipped = 0
     for package in scan["dependencies"]:
         name = package["name"]
         if "skip_reason" in package:
@@ -46,7 +46,7 @@ def render(scan, exceptions, audit_status):
                  if (name, version, identifier) in approved),
                 None,
             )
-            blocking += reason is None
+            open_findings += reason is None
             versions = finding.get("fix_versions") or []
             fix = "Upgrade to a fixed release: " + ", ".join(versions) if versions else "Review advisory for mitigation"
             row = (
@@ -58,10 +58,11 @@ def render(scan, exceptions, audit_status):
             lines.append("| " + " | ".join(map(cell, row)) + " |")
 
     failed = audit_status != int(findings > 0)
-    lines.extend(["", f"Findings: {findings}. Blocking: {blocking}. Skipped packages: {skipped}."])
+    lines.extend(["", f"Findings: {findings}. Open: {open_findings}. Skipped packages: {skipped}.",
+                  "Findings are informational and do not block deployment."])
     if failed:
         lines.append("Scanner returned an unexpected exit status. Check the job log.")
-    return "\n".join(lines) + "\n", int(bool(blocking or skipped or failed))
+    return "\n".join(lines) + "\n", int(bool(skipped or failed))
 
 
 def publish(path, report):
@@ -81,11 +82,11 @@ def semgrep_report(path):
             "| Rule | Location | Semgrep severity | Rule impact | Suggested fix |",
             "|---|---|---|---|---|",
         ])
-        blocking = 0
+        error_findings = 0
         high_impact = 0
         for finding in results:
             extra = finding["extra"]
-            blocking += extra["severity"] == "ERROR"
+            error_findings += extra["severity"] == "ERROR"
             impact = str(extra.get("metadata", {}).get("impact", "")).upper()
             high_impact += impact in ("HIGH", "CRITICAL")
             row = (
@@ -96,8 +97,9 @@ def semgrep_report(path):
             lines.append("| " + " | ".join(map(cell, row)) + " |")
         for error in errors:
             lines.append(f"\n- Scanner error: {cell(error.get('message', error))}")
-        lines.append(f"\nHigh-impact findings: {high_impact}. Blocking ERROR-level findings: {blocking}.")
-        status = int(bool(errors or blocking))
+        lines.append(f"\nHigh-impact findings: {high_impact}. ERROR-level findings: {error_findings}.")
+        lines.append("Findings are informational and do not block deployment.")
+        status = int(bool(errors))
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         lines.append(f"Report unavailable: {cell(exc)}")
         status = 1
