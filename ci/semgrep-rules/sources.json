@@ -1,0 +1,16 @@
+[
+  {
+    "file": "python.yml",
+    "source": "https://semgrep.dev/c/p/python",
+    "downloaded": "2026-11-20",
+    "sha256": "de5bc79d074c3b4146338a0bf95830406f169bd91ac590a2f1ef111f162e23f5",
+    "rules": 151
+  },
+  {
+    "file": "security-audit.yml",
+    "source": "https://semgrep.dev/c/p/security-audit",
+    "downloaded": "2026-11-20",
+    "sha256": "6d2f9a77b0372395072aa859ffd47f57b5851e1511da72a6c1b7ff9898ee1313",
+    "rules": 225
+  }
+]

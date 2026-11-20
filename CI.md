@@ -41,14 +41,15 @@ sh ci/run-local.sh
 | ------ | ---------------------------------------------------------------------------------------- | ---------------------------------------- |
 | Build  | `ci/build.sh` проверяет Python через compileall и упаковывает исходники                  | `application-build` с `source.tar.gz`    |
 | Test   | Получает архив Build, ставит зависимости и запускает `ci/test.py` с отдельной PostgreSQL | `junit-report` с JUnit XML               |
-| SAST   | Semgrep проверяет app, db, ci и main.py по `.semgrep.yml`                                | `sast-report` с JSON-отчётом             |
+| SAST   | Semgrep проверяет app, db, ci и main.py по локальным снимкам `p/python`, `p/security-audit` и `.semgrep.yml` | `sast-report`: JSON, Markdown, SARIF, PDF |
 | Dependency audit | Параллельно с Build проверяет зависимости через pip-audit | Отчёт и перечень компонентов CycloneDX |
 | Deploy | `ci/deploy.sh` собирает образ, запускает Compose и ждёт готовности                       | Docker-образ `.tar.gz` и адрес `/health` |
 
-В Test выполняются **28 тестов** из `tests/`. Ненулевой код тестов останавливает
-конвейер. В SAST флаг `--error` делает то же при срабатывании правил ERROR,
-которые в наборе помечены HIGH/CRITICAL. Deploy ожидает успеха и SAST, и Dependency audit. Ошибка сканера тоже останавливает
-конвейер. Это небольшой учебный набор правил, а не проверка всех уязвимостей.
+В Test выполняются unittest-тесты из `tests/` и отдельный набор pytest из
+`tests/security/`. Ненулевой код тестов останавливает конвейер.
+SAST сохраняет находки всех уровней, а `ci/dependency_report.py` блокирует этап
+при находках уровня ERROR. Ошибки сканера и отчётов также блокируют конвейер.
+Deploy ожидает успеха SAST и Dependency audit. Набор не гарантирует отсутствие всех уязвимостей.
 
 **Кэш** хранит загруженные pip-пакеты для ускорения повторных запусков Test/SAST.
 **Артефакты** сохраняют результат стадии или передают его дальше: исходники,
@@ -108,3 +109,18 @@ docker compose --env-file ci/runner.env -f compose.ci.yaml down --volumes
 командой `docker load -i file-manager-image.tar.gz`.
 
 Тесты и их запуск описаны в [TESTING.md](TESTING.md).
+
+## Security regression
+
+`python ci/security_regression.py` запускает сохранённый корпус из
+`tests/security/` на временных файлах без сетевых подключений и выполнения
+команд из входных данных. PostgreSQL для этого набора не требуется.
+CI сохраняет JSON и Markdown в артефакте `security-regression`, включая ошибки.
+Описание покрытия и ограничений — [SECURITY-COVERAGE.md](SECURITY-COVERAGE.md).
+
+Корпус включает уникальные строки четырёх списков Directory Traversal и двух
+списков XXE Intruders из PayloadsAllTheThings. Исходные URL, хеши файлов и
+upstream-коммит сохранены в `tests/security/corpus.json`, лицензия приложена.
+Для запуска готового корпуса исходный репозиторий не нужен. Для явного
+обновления через `python ci/build_security_corpus.py` сначала разместите
+проверенную копию PayloadsAllTheThings в `security/PayloadsAllTheThings`.

@@ -1,0 +1,402 @@
+{
+  "categories": [
+    {
+      "category": "Account Takeover",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Account%20Takeover/README.md"
+    },
+    {
+      "category": "API Key Leaks",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/API%20Key%20Leaks/README.md"
+    },
+    {
+      "category": "Brute Force Rate Limit",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Brute%20Force%20Rate%20Limit/README.md"
+    },
+    {
+      "category": "Business Logic Errors",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Business%20Logic%20Errors/README.md"
+    },
+    {
+      "category": "Clickjacking",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Clickjacking/README.md"
+    },
+    {
+      "category": "Client Side Path Traversal",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Client%20Side%20Path%20Traversal/README.md"
+    },
+    {
+      "category": "Command Injection",
+      "selected": true,
+      "reason": "Literal filenames only; application has no shell execution sink",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Command%20Injection/README.md"
+    },
+    {
+      "category": "CORS Misconfiguration",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/CORS%20Misconfiguration/README.md"
+    },
+    {
+      "category": "CRLF Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/CRLF%20Injection/README.md"
+    },
+    {
+      "category": "Cross-Site Request Forgery",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Cross-Site%20Request%20Forgery/README.md"
+    },
+    {
+      "category": "CSS Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/CSS%20Injection/README.md"
+    },
+    {
+      "category": "CSV Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/CSV%20Injection/README.md"
+    },
+    {
+      "category": "CVE Exploits",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/CVE%20Exploits/README.md"
+    },
+    {
+      "category": "Denial of Service",
+      "selected": true,
+      "reason": "Bounded file/parser/archive limit tests only",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Denial%20of%20Service/README.md"
+    },
+    {
+      "category": "Dependency Confusion",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Dependency%20Confusion/README.md"
+    },
+    {
+      "category": "Directory Traversal",
+      "selected": true,
+      "reason": "Lexical path confinement and ZIP entry validation",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Directory%20Traversal/README.md"
+    },
+    {
+      "category": "DNS Rebinding",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/DNS%20Rebinding/README.md"
+    },
+    {
+      "category": "DOM Clobbering",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/DOM%20Clobbering/README.md"
+    },
+    {
+      "category": "Encoding Transformations",
+      "selected": true,
+      "reason": "Literal encoded paths and Unicode filenames",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Encoding%20Transformations/README.md"
+    },
+    {
+      "category": "External Variable Modification",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/External%20Variable%20Modification/README.md"
+    },
+    {
+      "category": "File Inclusion",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/File%20Inclusion/README.md"
+    },
+    {
+      "category": "Google Web Toolkit",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Google%20Web%20Toolkit/README.md"
+    },
+    {
+      "category": "GraphQL Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/GraphQL%20Injection/README.md"
+    },
+    {
+      "category": "Headless Browser",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Headless%20Browser/README.md"
+    },
+    {
+      "category": "Hidden Parameters",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Hidden%20Parameters/README.md"
+    },
+    {
+      "category": "HTTP Parameter Pollution",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/HTTP%20Parameter%20Pollution/README.md"
+    },
+    {
+      "category": "Insecure Deserialization",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Insecure%20Deserialization/README.md"
+    },
+    {
+      "category": "Insecure Direct Object References",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Insecure%20Direct%20Object%20References/README.md"
+    },
+    {
+      "category": "Insecure Management Interface",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Insecure%20Management%20Interface/README.md"
+    },
+    {
+      "category": "Insecure Randomness",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Insecure%20Randomness/README.md"
+    },
+    {
+      "category": "Insecure Source Code Management",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Insecure%20Source%20Code%20Management/README.md"
+    },
+    {
+      "category": "Java RMI",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Java%20RMI/README.md"
+    },
+    {
+      "category": "JSON Web Token",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/JSON%20Web%20Token/README.md"
+    },
+    {
+      "category": "LaTeX Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/LaTeX%20Injection/README.md"
+    },
+    {
+      "category": "LDAP Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/LDAP%20Injection/README.md"
+    },
+    {
+      "category": "Mass Assignment",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Mass%20Assignment/README.md"
+    },
+    {
+      "category": "Methodology and Resources",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Methodology%20and%20Resources/README.md"
+    },
+    {
+      "category": "NoSQL Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/NoSQL%20Injection/README.md"
+    },
+    {
+      "category": "OAuth Misconfiguration",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/OAuth%20Misconfiguration/README.md"
+    },
+    {
+      "category": "Open Redirect",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Open%20Redirect/README.md"
+    },
+    {
+      "category": "ORM Leak",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/ORM%20Leak/README.md"
+    },
+    {
+      "category": "Prompt Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Prompt%20Injection/README.md"
+    },
+    {
+      "category": "Prototype Pollution",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Prototype%20Pollution/README.md"
+    },
+    {
+      "category": "Race Condition",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Race%20Condition/README.md"
+    },
+    {
+      "category": "Regular Expression",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Regular%20Expression/README.md"
+    },
+    {
+      "category": "Request Smuggling",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Request%20Smuggling/README.md"
+    },
+    {
+      "category": "Reverse Proxy Misconfigurations",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Reverse%20Proxy%20Misconfigurations/README.md"
+    },
+    {
+      "category": "SAML Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/SAML%20Injection/README.md"
+    },
+    {
+      "category": "Server Side Include Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Server%20Side%20Include%20Injection/README.md"
+    },
+    {
+      "category": "Server Side Request Forgery",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Server%20Side%20Request%20Forgery/README.md"
+    },
+    {
+      "category": "Server Side Template Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Server%20Side%20Template%20Injection/README.md"
+    },
+    {
+      "category": "SQL Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/SQL%20Injection/README.md"
+    },
+    {
+      "category": "Tabnabbing",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Tabnabbing/README.md"
+    },
+    {
+      "category": "Type Juggling",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Type%20Juggling/README.md"
+    },
+    {
+      "category": "Upload Insecure Files",
+      "selected": true,
+      "reason": "Filename and extension handling only; no upload endpoint",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Upload%20Insecure%20Files/README.md"
+    },
+    {
+      "category": "Virtual Hosts",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Virtual%20Hosts/README.md"
+    },
+    {
+      "category": "Web Cache Deception",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Web%20Cache%20Deception/README.md"
+    },
+    {
+      "category": "Web Sockets",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Web%20Sockets/README.md"
+    },
+    {
+      "category": "XPATH Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/XPATH%20Injection/README.md"
+    },
+    {
+      "category": "XS-Leak",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/XS-Leak/README.md"
+    },
+    {
+      "category": "XSLT Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/XSLT%20Injection/README.md"
+    },
+    {
+      "category": "XSS Injection",
+      "selected": false,
+      "reason": "Outside the verified filesystem regression suite",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/XSS%20Injection/README.md"
+    },
+    {
+      "category": "XXE Injection",
+      "selected": true,
+      "reason": "Entity/DTD rejection before parser construction; no expansion or network",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/XXE%20Injection/README.md"
+    },
+    {
+      "category": "Zip Slip",
+      "selected": true,
+      "reason": "ZIP entry confinement and bounded real archive fixtures",
+      "source": "https://github.com/swisskyrepo/PayloadsAllTheThings/blob/08ea40e77db3f42ef8f20c65196f3936a19b6c86/Zip%20Slip/README.md"
+    }
+  ],
+  "excluded": [
+    {
+      "cases": "TOCTOU, symlink and POSIX permission fixtures requiring Linux validation",
+      "reason": "Unfinished scenarios removed at the user's request"
+    },
+    {
+      "cases": "System file reads, remote resource resolution, executable payloads and exhaustion",
+      "reason": "Only lexical/barrier checks or bounded local markers are used"
+    },
+    {
+      "cases": "SQLi, XSS, PHP/JVM execution chains and web upload payloads",
+      "reason": "Outside the requested file manager regression scope"
+    }
+  ]
+}

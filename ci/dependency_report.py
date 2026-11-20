@@ -81,8 +81,13 @@ def semgrep_report(path):
             "| Rule | Location | Semgrep severity | Rule impact | Suggested fix |",
             "|---|---|---|---|---|",
         ])
+        blocking = 0
+        high_impact = 0
         for finding in results:
             extra = finding["extra"]
+            blocking += extra["severity"] == "ERROR"
+            impact = str(extra.get("metadata", {}).get("impact", "")).upper()
+            high_impact += impact in ("HIGH", "CRITICAL")
             row = (
                 finding["check_id"], f"{finding['path']}:{finding['start']['line']}",
                 extra["severity"], extra.get("metadata", {}).get("impact", "Unspecified"),
@@ -91,7 +96,8 @@ def semgrep_report(path):
             lines.append("| " + " | ".join(map(cell, row)) + " |")
         for error in errors:
             lines.append(f"\n- Scanner error: {cell(error.get('message', error))}")
-        status = int(bool(errors))
+        lines.append(f"\nHigh-impact findings: {high_impact}. Blocking ERROR-level findings: {blocking}.")
+        status = int(bool(errors or blocking))
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         lines.append(f"Report unavailable: {cell(exc)}")
         status = 1

@@ -81,6 +81,16 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install -r ci/requirements-test.txt
           python ci/test.py
+      - name: Security regression
+        if: always()
+        run: python ci/security_regression.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-regression
+          path: |
+            reports/security-regression.json
+            reports/security-regression.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,7 +115,9 @@ jobs:
       - run: python -m pip install -r ci/requirements-sast.txt
       - run: |
           mkdir -p reports
-          semgrep scan --config .semgrep.yml --strict --error --severity ERROR \
+          semgrep scan --config ci/semgrep-rules/python.yml \
+            --config ci/semgrep-rules/security-audit.yml --config .semgrep.yml \
+            --exclude 'ci/semgrep-rules/**' --strict \
             --metrics off --disable-version-check --json --output reports/semgrep.json \
             --sarif-output reports/semgrep.sarif app db ci main.py
       - name: Summarize Semgrep findings
